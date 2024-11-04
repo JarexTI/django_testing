@@ -1,11 +1,11 @@
 from datetime import datetime, timedelta
 
 import pytest
-
 from django.conf import settings
+from django.urls import reverse
 from django.utils import timezone
-
-from news.models import News, Comment
+from news.models import Comment, News
+from pytest_lazyfixture import lazy_fixture
 
 NEW_TEXT = 'Новый текст'
 TITLE = 'Заголовок'
@@ -13,6 +13,20 @@ TEXT_NEWS = 'Текст новости'
 TEXT_COMMENT = 'Текст комментария'
 NEWS = 'Новость'
 TEXT = 'Текст'
+PK = 1
+ADMIN = lazy_fixture('admin_client')
+AUTHOR = lazy_fixture('author_client')
+CLIENT = lazy_fixture('client')
+
+URL = {
+    'home': reverse('news:home'),
+    'detail': reverse('news:detail', args=(PK,)),
+    'edit': reverse('news:edit', args=(PK,)),
+    'delete': reverse('news:delete', args=(PK,)),
+    'login': reverse('users:login'),
+    'logout': reverse('users:logout'),
+    'signup': reverse('users:signup'),
+}
 
 
 @pytest.fixture

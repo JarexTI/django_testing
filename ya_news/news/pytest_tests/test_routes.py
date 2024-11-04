@@ -1,57 +1,42 @@
+# test_routes.py
 from http import HTTPStatus
 
-from django.urls import reverse
-
 import pytest
-
+from news.pytest_tests.conftest import ADMIN, AUTHOR, CLIENT, URL
 from pytest_django.asserts import assertRedirects
 
-
-@pytest.mark.django_db
-@pytest.mark.parametrize(
-    'name', ('news:home', 'users:login', 'users:logout', 'users:signup')
-)
-def test_home_page_access_for_anon(client, name):
-    url = reverse(name)
-    response = client.get(url)
-    assert response.status_code == HTTPStatus.OK
-
-
-@pytest.mark.django_db
-def test_news_page_access_for_anon(client, news):
-    url = reverse('news:detail', kwargs={'pk': news.pk})
-    response = client.get(url)
-    assert response.status_code == HTTPStatus.OK
+pytestmark = pytest.mark.django_db
 
 
 @pytest.mark.parametrize(
-    'parametrized_client, expected_status',
+    'reverse_url, parametrized_client, status',
     (
-        (pytest.lazy_fixture('admin_client'),  # type: ignore
-         HTTPStatus.NOT_FOUND),
-        (pytest.lazy_fixture('author_client'), HTTPStatus.OK),  # type: ignore
+        (URL.get('home'), CLIENT, HTTPStatus.OK),
+        (URL.get('detail'), CLIENT, HTTPStatus.OK),
+        (URL.get('login'), CLIENT, HTTPStatus.OK),
+        (URL.get('logout'), CLIENT, HTTPStatus.OK),
+        (URL.get('signup'), CLIENT, HTTPStatus.OK),
+        (URL.get('edit'), AUTHOR, HTTPStatus.OK),
+        (URL.get('delete'), AUTHOR, HTTPStatus.OK),
+        (URL.get('edit'), ADMIN, HTTPStatus.NOT_FOUND),
+        (URL.get('delete'), ADMIN, HTTPStatus.NOT_FOUND),
     ),
 )
-@pytest.mark.parametrize(
-    'name',
-    ('news:edit', 'news:delete'),
-)
-def test_comment_edit_delete_access_for_author(
-    parametrized_client, expected_status, name, comment
+def test_pages_availability_for_anonymous_user(
+    reverse_url, parametrized_client, status, comment
 ):
-    url = reverse(name, kwargs={'pk': comment.pk})
-    response = parametrized_client.get(url)
-    assert response.status_code == expected_status
+    response = parametrized_client.get(reverse_url)
+    assert response.status_code == status
 
 
-@pytest.mark.django_db
 @pytest.mark.parametrize(
-    'name',
-    ('news:edit', 'news:delete'),
+    'reverse_url',
+    (URL.get('edit'), URL.get('delete')),
 )
-def test_anon_redirect_to_login_on_edit_delete_attempt(client, name, comment):
-    login_url = reverse('users:login')
-    url = reverse(name, kwargs={'pk': comment.pk})
-    expected_url = f'{login_url}?next={url}'
-    response = client.get(url)
+def test_redirect_for_anonymous_client(client,
+                                       reverse_url,
+                                       comment):
+    """Проверка редиректа для анонимного пользователя."""
+    expected_url = f'{URL.get("login")}?next={reverse_url}'
+    response = client.get(reverse_url)
     assertRedirects(response, expected_url)

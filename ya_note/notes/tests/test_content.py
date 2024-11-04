@@ -1,31 +1,10 @@
-from django.contrib.auth import get_user_model
-from django.test import Client, TestCase
+#  test_content.py
 from django.urls import reverse
 
-from notes.models import Note
-
-User = get_user_model()
+from notes.tests.fixtures import URL, ContentFixture
 
 
-class TestContent(TestCase):
-    TITLE = 'Заголовок'
-    TEXT = 'Текст'
-
-    @classmethod
-    def setUpTestData(cls):
-        cls.user = User.objects.create(username='Пользователь')
-        cls.author_user = User.objects.create(username='Автор пользователь')
-        cls.note = Note.objects.create(
-            author=cls.user,
-            title=cls.TITLE,
-            text=cls.TEXT,
-        )
-
-    def setUp(self):
-        self.user_client = Client()
-        self.user_client.force_login(self.user)
-        self.author_user_client = Client()
-        self.author_user_client.force_login(self.author_user)
+class TestContent(ContentFixture):
 
     def test_note_passed_to_page_in_object_list(self):
         users_statuses = (
@@ -34,15 +13,15 @@ class TestContent(TestCase):
         )
         for user, note_list in users_statuses:
             with self.subTest(user=user):
-                url = reverse('notes:list')
+                url = reverse(URL.get('list', None))
                 response = user.get(url)
                 object_list = response.context['object_list']
                 self.assertIs((self.note in object_list), note_list)
 
     def test_forms_passed_to_create_and_edit_pages(self):
         urls = (
-            ('notes:add', None),
-            ('notes:edit', (self.note.slug,)),
+            (URL.get('add', None), None),
+            (URL.get('edit', None), (self.note.slug,)),
         )
         for name, args in urls:
             with self.subTest(name=name):

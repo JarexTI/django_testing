@@ -1,21 +1,20 @@
-from django.conf import settings
-from django.urls import reverse
-
 import pytest
+from django.conf import settings
+from news.forms import CommentForm
+from news.pytest_tests.conftest import URL
+
+pytestmark = pytest.mark.django_db
 
 
-@pytest.mark.django_db
 def test_max_10_news_on_homepage(client, list_news):
-    url = reverse('news:home')
+    url = URL.get('home')
     response = client.get(url)
-    object_list = response.context['object_list']
-    news_count = len(object_list)
+    news_count = response.context['object_list'].count()
     assert news_count == settings.NEWS_COUNT_ON_HOME_PAGE
 
 
-@pytest.mark.django_db
 def test_news_sorted_by_freshness(client, list_news):
-    url = reverse('news:home')
+    url = URL.get('home', None)
     response = client.get(url)
     object_list = response.context['object_list']
     any_news = [test_news for test_news in object_list]
@@ -23,14 +22,14 @@ def test_news_sorted_by_freshness(client, list_news):
     assert sorted_news == list_news
 
 
-@pytest.mark.django_db
 def test_comments_sorted_chronologically(client, news, list_comments):
-    url = reverse('news:detail', kwargs={'pk': news.pk})
+    url = URL.get('detail')
     response = client.get(url)
     assert 'news' in response.context
     news = response.context['news']
-    any_comments = news.comment_set.all()
-    assert any_comments[0].created < any_comments[1].created
+    comments = list(news.comment_set.all())
+    sorted_comments = sorted(comments, key=lambda comment: comment.created)
+    assert comments == sorted_comments
 
 
 @pytest.mark.parametrize(
@@ -40,8 +39,11 @@ def test_comments_sorted_chronologically(client, news, list_comments):
         (pytest.lazy_fixture('author_client'), True),
     ),
 )
-@pytest.mark.django_db
 def test_comment_form_accessibility(parametrized_client, status, comment):
-    url = reverse('news:detail', kwargs={'pk': comment.pk})
+    url = URL.get('detail')
     response = parametrized_client.get(url)
-    assert ('form' in response.context) is status
+    form_in_context = 'form' in response.context
+    assert form_in_context is status
+
+    if form_in_context:
+        assert isinstance(response.context['form'], CommentForm)

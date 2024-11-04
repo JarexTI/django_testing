@@ -1,40 +1,18 @@
 from http import HTTPStatus
 
-from django.contrib.auth import get_user_model
-from django.test import Client, TestCase
 from django.urls import reverse
 
-from notes.models import Note
-
-User = get_user_model()
+from notes.tests.fixtures import URL, ContentFixture
 
 
-class TestRoutes(TestCase):
-    TITLE = 'Заголовок'
-    TEXT = 'Текст'
-
-    @classmethod
-    def setUpTestData(cls):
-        cls.user = User.objects.create(username='Пользователь')
-        cls.author_user = User.objects.create(username='Автор пользователь')
-        cls.note = Note.objects.create(
-            author=cls.user,
-            title=cls.TITLE,
-            text=cls.TEXT,
-        )
-
-    def setUp(self):
-        self.user_client = Client()
-        self.user_client.force_login(self.user)
-        self.author_user_client = Client()
-        self.author_user_client.force_login(self.author_user)
+class TestRoutes(ContentFixture):
 
     def test_anonymous_user_page_access(self):
         urls = (
-            'notes:home',
-            'users:login',
-            'users:logout',
-            'users:signup',
+            URL.get('home', None),
+            URL.get('login', None),
+            URL.get('logout', None),
+            URL.get('signup', None),
         )
         for name in urls:
             with self.subTest(name=name):
@@ -44,9 +22,9 @@ class TestRoutes(TestCase):
 
     def test_author_user_page_access(self):
         urls = (
-            'notes:list',
-            'notes:success',
-            'notes:add',
+            URL.get('list', None),
+            URL.get('success', None),
+            URL.get('add', None),
         )
         for name in urls:
             with self.subTest(name=name):
@@ -60,9 +38,9 @@ class TestRoutes(TestCase):
             (self.author_user_client, HTTPStatus.NOT_FOUND),
         )
         urls = (
-            'notes:detail',
-            'notes:edit',
-            'notes:delete',
+            URL.get('detail', None),
+            URL.get('edit', None),
+            URL.get('delete', None),
         )
         for user, status in users_statuses:
             for name in urls:
@@ -72,14 +50,14 @@ class TestRoutes(TestCase):
                     self.assertEqual(response.status_code, status)
 
     def test_page_redirects(self):
-        login_url = reverse('users:login')
+        login_url = reverse(URL.get('login', None))
         urls = (
-            ('notes:list', None),
-            ('notes:success', None),
-            ('notes:add', None),
-            ('notes:detail', (self.note.slug,)),
-            ('notes:edit', (self.note.slug,)),
-            ('notes:delete', (self.note.slug,)),
+            (URL.get('list', None), None),
+            (URL.get('success', None), None),
+            (URL.get('add', None), None),
+            (URL.get('detail', None), (self.note.slug,)),
+            (URL.get('edit', None), (self.note.slug,)),
+            (URL.get('delete', None), (self.note.slug,)),
         )
         for name, args in urls:
             with self.subTest(name=name):
