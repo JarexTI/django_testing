@@ -5,6 +5,8 @@ from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 from django.urls import reverse
 
+from notes.models import Note
+
 User = get_user_model()
 
 SLUG = 'note-slug'
@@ -42,6 +44,8 @@ URL = URL_NAME(
 class BaseFixture(TestCase):
     TITLE = 'Заголовок'
     TEXT = 'Текст'
+    NEW_TITLE = 'Новый заголовок'
+    TEST_TEXT = 'Тестовый текст'
 
     @classmethod
     def setUpTestData(cls):
@@ -52,3 +56,25 @@ class BaseFixture(TestCase):
         cls.user_client.force_login(cls.user)
         cls.author_user_client = Client()
         cls.author_user_client.force_login(cls.author_user)
+
+        cls.note = Note.objects.create(
+            author=cls.user,
+            title=cls.TITLE,
+            text=cls.TEXT,
+            slug=SLUG,
+        )
+        cls.data = {
+            'slug': 'slug',
+            'title': cls.NEW_TITLE,
+            'text': cls.TEST_TEXT,
+        }
+        cls.another_note = Note.objects.create(
+            author=cls.author_user,
+            title=cls.TITLE,
+            text=cls.TEXT,
+            slug='unique-slug'
+        )
+
+        cls.NOTE_EDIT_PAGE = reverse(
+            'notes:edit', args=(cls.note.slug,)
+        )

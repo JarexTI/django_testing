@@ -10,28 +10,6 @@ from notes.tests.fixtures import URL, BaseFixture
 
 
 class TestLogic(BaseFixture):
-    NEW_TITLE = 'Новый заголовок'
-    TEST_TEXT = 'Тестовый текст'
-
-    @classmethod
-    def setUpTestData(cls):
-        super().setUpTestData()
-        cls.data = {
-            'slug': 'slug',
-            'title': cls.NEW_TITLE,
-            'text': cls.TEST_TEXT,
-        }
-        cls.note = Note.objects.create(
-            author=cls.user,
-            title=cls.TITLE,
-            text=cls.TEXT,
-        )
-        cls.another_note = Note.objects.create(
-            author=cls.author_user,
-            title=cls.TITLE,
-            text=cls.TEXT,
-            slug='unique-slug'
-        )
 
     def test_logged_in_user_can_create_note(self):
         Note.objects.all().delete()
@@ -41,7 +19,7 @@ class TestLogic(BaseFixture):
         self.assertRedirects(response, URL.success)
         self.assertEqual(expected_count, Note.objects.count())
 
-        note = Note.objects.exclude(id=self.note.id).first()
+        note = Note.objects.get()
         self.assertEqual(note.slug, self.data['slug'])
         self.assertEqual(note.title, self.data['title'])
         self.assertEqual(note.text, self.data['text'])
@@ -78,7 +56,7 @@ class TestLogic(BaseFixture):
         self.data.pop('slug')
         response = self.user_client.post(url, data=self.data)
         self.assertRedirects(response, URL.success)
-        note = Note.objects.get(title=self.NEW_TITLE)
+        note = Note.objects.get()
         expected_slug = slugify(self.data['title'])
         self.assertEqual(note.slug, expected_slug)
 

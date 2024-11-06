@@ -79,7 +79,7 @@ def list_news():
 
 @pytest.fixture
 def list_comments(news, author):
-    now, comment_list = timezone.now(), []
+    now = timezone.now()
     for index in range(2):
         test_comment = Comment.objects.create(
             author=author,
@@ -88,4 +88,3 @@ def list_comments(news, author):
         )
         test_comment.created = now + timedelta(days=index)
         test_comment.save()
-        comment_list.append(test_comment)

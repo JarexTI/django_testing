@@ -1,9 +1,8 @@
 from notes.forms import NoteForm
-from notes.tests.fixture_content import ContentFixture
-from notes.tests.fixtures import URL
+from notes.tests.fixtures import URL, BaseFixture
 
 
-class TestContent(ContentFixture):
+class TestContent(BaseFixture):
 
     def test_note_passed_to_page_in_object_list(self):
         users_statuses = (

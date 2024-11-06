@@ -15,7 +15,7 @@ def test_max_10_news_on_homepage(client, list_news):
 
 
 def test_news_sorted_by_freshness(client, list_news):
-    url = URL.get('home', None)
+    url = URL.get('home')
     response = client.get(url)
     news = response.context['object_list']
     sorted_news = sorted(news, key=lambda x: x.date, reverse=True)

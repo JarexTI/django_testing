@@ -1,10 +1,9 @@
 from http import HTTPStatus
 
-from notes.tests.fixture_content import ContentFixture
-from notes.tests.fixtures import URL
+from notes.tests.fixtures import URL, BaseFixture
 
 
-class TestRoutes(ContentFixture):
+class TestRoutes(BaseFixture):
 
     def test_anonymous_user_page_access(self):
         urls = (
