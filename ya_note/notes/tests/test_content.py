@@ -1,5 +1,5 @@
 from notes.forms import NoteForm
-from notes.tests.fixtures import URL, BaseFixture
+from notes.tests.fixtures import BaseFixture
 
 
 class TestContent(BaseFixture):
@@ -11,15 +11,15 @@ class TestContent(BaseFixture):
         )
         for user, note_list in users_statuses:
             with self.subTest(user=user):
-                url = URL.list
+                url = self.URL.list
                 response = user.get(url)
                 response_context = response.context['object_list']
                 self.assertIs((self.note in response_context), note_list)
 
     def test_forms_passed_to_create_and_edit_pages(self):
         urls = (
-            URL.add,
-            URL.edit,
+            self.URL.add,
+            self.URL.edit,
         )
         for url in urls:
             with self.subTest(url=url):

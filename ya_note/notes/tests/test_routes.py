@@ -1,16 +1,16 @@
 from http import HTTPStatus
 
-from notes.tests.fixtures import URL, BaseFixture
+from notes.tests.fixtures import BaseFixture
 
 
 class TestRoutes(BaseFixture):
 
     def test_anonymous_user_page_access(self):
         urls = (
-            URL.home,
-            URL.login,
-            URL.logout,
-            URL.signup,
+            self.URL.home,
+            self.URL.login,
+            self.URL.logout,
+            self.URL.signup,
         )
         for url in urls:
             with self.subTest(url=url):
@@ -19,9 +19,9 @@ class TestRoutes(BaseFixture):
 
     def test_author_user_page_access(self):
         urls = (
-            URL.list,
-            URL.success,
-            URL.add,
+            self.URL.list,
+            self.URL.success,
+            self.URL.add,
         )
         for url in urls:
             with self.subTest(url=url):
@@ -34,9 +34,9 @@ class TestRoutes(BaseFixture):
             (self.author_user_client, HTTPStatus.NOT_FOUND),
         )
         urls = (
-            URL.detail,
-            URL.edit,
-            URL.delete,
+            self.URL.detail,
+            self.URL.edit,
+            self.URL.delete,
         )
         for user, status in users_statuses:
             for url in urls:
@@ -45,14 +45,14 @@ class TestRoutes(BaseFixture):
                     self.assertEqual(response.status_code, status)
 
     def test_page_redirects(self):
-        login_url = URL.login
+        login_url = self.URL.login
         urls = (
-            URL.list,
-            URL.success,
-            URL.add,
-            URL.detail,
-            URL.edit,
-            URL.delete,
+            self.URL.list,
+            self.URL.success,
+            self.URL.add,
+            self.URL.detail,
+            self.URL.edit,
+            self.URL.delete,
         )
         for url in urls:
             with self.subTest(url=url):

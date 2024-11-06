@@ -9,8 +9,6 @@ from notes.models import Note
 
 User = get_user_model()
 
-SLUG = 'note-slug'
-
 URL_NAME = namedtuple(
     'NAME',
     [
@@ -25,19 +23,6 @@ URL_NAME = namedtuple(
         'logout',
         'signup',
     ],
-)
-
-URL = URL_NAME(
-    reverse('notes:home'),
-    reverse('notes:add'),
-    reverse('notes:list'),
-    reverse('notes:detail', args=(SLUG,)),
-    reverse('notes:edit', args=(SLUG,)),
-    reverse('notes:delete', args=(SLUG,)),
-    reverse('notes:success'),
-    reverse('users:login'),
-    reverse('users:logout'),
-    reverse('users:signup'),
 )
 
 
@@ -61,7 +46,7 @@ class BaseFixture(TestCase):
             author=cls.user,
             title=cls.TITLE,
             text=cls.TEXT,
-            slug=SLUG,
+            slug='note-slug',
         )
         cls.data = {
             'slug': 'slug',
@@ -75,6 +60,19 @@ class BaseFixture(TestCase):
             slug='unique-slug'
         )
 
+        cls.URL = URL_NAME(
+            reverse('notes:home'),
+            reverse('notes:add'),
+            reverse('notes:list'),
+            reverse('notes:detail', args=(cls.note.slug,)),
+            reverse('notes:edit', args=(cls.note.slug,)),
+            reverse('notes:delete', args=(cls.note.slug,)),
+            reverse('notes:success'),
+            reverse('users:login'),
+            reverse('users:logout'),
+            reverse('users:signup'),
+        )
+
         cls.NOTE_EDIT_PAGE = reverse(
-            'notes:edit', args=(cls.note.slug,)
+            'notes:edit', args=(cls.another_note.slug,)
         )
