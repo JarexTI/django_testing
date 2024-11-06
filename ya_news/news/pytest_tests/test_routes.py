@@ -2,8 +2,9 @@
 from http import HTTPStatus
 
 import pytest
-from news.pytest_tests.conftest import ADMIN, AUTHOR, CLIENT, URL
 from pytest_django.asserts import assertRedirects
+
+from news.pytest_tests.conftest import ADMIN, AUTHOR, CLIENT, URL
 
 pytestmark = pytest.mark.django_db
 

@@ -1,34 +1,31 @@
 from http import HTTPStatus
 
-from django.urls import reverse
-
-from notes.tests.fixtures import URL, ContentFixture
+from notes.tests.fixture_content import ContentFixture
+from notes.tests.fixtures import URL
 
 
 class TestRoutes(ContentFixture):
 
     def test_anonymous_user_page_access(self):
         urls = (
-            URL.get('home', None),
-            URL.get('login', None),
-            URL.get('logout', None),
-            URL.get('signup', None),
+            URL.home,
+            URL.login,
+            URL.logout,
+            URL.signup,
         )
-        for name in urls:
-            with self.subTest(name=name):
-                url = reverse(name)
+        for url in urls:
+            with self.subTest(url=url):
                 response = self.user_client.get(url)
                 self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_author_user_page_access(self):
         urls = (
-            URL.get('list', None),
-            URL.get('success', None),
-            URL.get('add', None),
+            URL.list,
+            URL.success,
+            URL.add,
         )
-        for name in urls:
-            with self.subTest(name=name):
-                url = reverse(name)
+        for url in urls:
+            with self.subTest(url=url):
                 response = self.user_client.get(url)
                 self.assertEqual(response.status_code, HTTPStatus.OK)
 
@@ -38,30 +35,28 @@ class TestRoutes(ContentFixture):
             (self.author_user_client, HTTPStatus.NOT_FOUND),
         )
         urls = (
-            URL.get('detail', None),
-            URL.get('edit', None),
-            URL.get('delete', None),
+            URL.detail,
+            URL.edit,
+            URL.delete,
         )
         for user, status in users_statuses:
-            for name in urls:
-                with self.subTest(user=user, name=name):
-                    url = reverse(name, args=(self.note.slug,))
+            for url in urls:
+                with self.subTest(user=user, url=url):
                     response = user.get(url)
                     self.assertEqual(response.status_code, status)
 
     def test_page_redirects(self):
-        login_url = reverse(URL.get('login', None))
+        login_url = URL.login
         urls = (
-            (URL.get('list', None), None),
-            (URL.get('success', None), None),
-            (URL.get('add', None), None),
-            (URL.get('detail', None), (self.note.slug,)),
-            (URL.get('edit', None), (self.note.slug,)),
-            (URL.get('delete', None), (self.note.slug,)),
+            URL.list,
+            URL.success,
+            URL.add,
+            URL.detail,
+            URL.edit,
+            URL.delete,
         )
-        for name, args in urls:
-            with self.subTest(name=name):
-                url = reverse(name, args=args)
+        for url in urls:
+            with self.subTest(url=url):
                 redirect_url = f'{login_url}?next={url}'
                 response = self.client.get(url)
                 self.assertRedirects(response, redirect_url)

@@ -1,7 +1,6 @@
-#  test_content.py
-from django.urls import reverse
-
-from notes.tests.fixtures import URL, ContentFixture
+from notes.forms import NoteForm
+from notes.tests.fixture_content import ContentFixture
+from notes.tests.fixtures import URL
 
 
 class TestContent(ContentFixture):
@@ -13,18 +12,19 @@ class TestContent(ContentFixture):
         )
         for user, note_list in users_statuses:
             with self.subTest(user=user):
-                url = reverse(URL.get('list', None))
+                url = URL.list
                 response = user.get(url)
-                object_list = response.context['object_list']
-                self.assertIs((self.note in object_list), note_list)
+                response_context = response.context['object_list']
+                self.assertIs((self.note in response_context), note_list)
 
     def test_forms_passed_to_create_and_edit_pages(self):
         urls = (
-            (URL.get('add', None), None),
-            (URL.get('edit', None), (self.note.slug,)),
+            URL.add,
+            URL.edit,
         )
-        for name, args in urls:
-            with self.subTest(name=name):
-                url = reverse(name, args=args)
+        for url in urls:
+            with self.subTest(url=url):
                 response = self.user_client.get(url)
                 self.assertIn('form', response.context)
+                form = response.context['form']
+                self.assertIsInstance(form, NoteForm)

@@ -1,5 +1,6 @@
 import pytest
 from django.conf import settings
+
 from news.forms import CommentForm
 from news.pytest_tests.conftest import URL
 
@@ -16,10 +17,9 @@ def test_max_10_news_on_homepage(client, list_news):
 def test_news_sorted_by_freshness(client, list_news):
     url = URL.get('home', None)
     response = client.get(url)
-    object_list = response.context['object_list']
-    any_news = [test_news for test_news in object_list]
-    sorted_news = sorted(any_news, key=lambda x: x.date, reverse=True)
-    assert sorted_news == list_news
+    news = response.context['object_list']
+    sorted_news = sorted(news, key=lambda x: x.date, reverse=True)
+    assert list(news) == sorted_news
 
 
 def test_comments_sorted_chronologically(client, news, list_comments):

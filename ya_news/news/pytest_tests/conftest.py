@@ -1,11 +1,12 @@
 from datetime import datetime, timedelta
 
 import pytest
+from pytest_lazyfixture import lazy_fixture
 from django.conf import settings
 from django.urls import reverse
 from django.utils import timezone
+
 from news.models import Comment, News
-from pytest_lazyfixture import lazy_fixture
 
 NEW_TEXT = 'Новый текст'
 TITLE = 'Заголовок'
@@ -67,16 +68,13 @@ def comment(news, author):
 
 @pytest.fixture
 def list_news():
-    today, news_list = datetime.today(), []
+    today = datetime.today()
     for index in range(settings.NEWS_COUNT_ON_HOME_PAGE):
-        test_news = News.objects.create(
+        News.objects.create(
             title=f'{NEWS} {index}',
             text=TEXT_NEWS,
+            date=today - timedelta(days=index),
         )
-        test_news.date = today - timedelta(days=index)
-        test_news.save()
-        news_list.append(test_news)
-    return news_list
 
 
 @pytest.fixture
@@ -91,4 +89,3 @@ def list_comments(news, author):
         test_comment.created = now + timedelta(days=index)
         test_comment.save()
         comment_list.append(test_comment)
-    return comment_list
