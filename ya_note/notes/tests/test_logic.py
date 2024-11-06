@@ -1,7 +1,6 @@
 #  test_logic.py
 from http import HTTPStatus
 
-from django.urls import reverse
 from pytils.translit import slugify
 
 from notes.forms import WARNING
