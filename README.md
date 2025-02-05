@@ -1,52 +1,105 @@
-# Django testing  
-## Если вы успели выполнить все домашние задания — ваш финальный проект готов.
-Перенесите тесты из ваших проектов в данный репозиторий (**django_testing**), который появился в вашем аккаунте.  
-В итоге должна получиться следующая структура репозитория:
-```
-Dev
- └── django_testing
-     ├── ya_news
-     │   ├── news
-     │   │   ├── fixtures/
-     │   │   ├── migrations/
-     │   │   ├── pytest_tests/   <- Директория с вашими тестами pytest для проекта ya_news
-     │   │   ├── __init__.py
-     │   │   ├── admin.py
-     │   │   ├── apps.py
-     │   │   ├── forms.py
-     │   │   ├── models.py
-     │   │   ├── urls.py
-     │   │   └── views.py
-     │   ├── templates/
-     │   ├── yanews/
-     │   ├── manage.py
-     │   └── pytest.ini
-     ├── ya_note
-     │   ├── notes
-     │   │   ├── migrations/
-     │   │   ├── tests/          <- Директория с вашими тестами unittest для проекта ya_note
-     │   │   ├── __init__.py
-     │   │   ├── admin.py
-     │   │   ├── apps.py
-     │   │   ├── forms.py
-     │   │   ├── models.py
-     │   │   ├── urls.py
-     │   │   └── views.py
-     │   ├── templates/
-     │   ├── yanote/
-     │   ├── manage.py
-     │   └── pytest.ini
-     ├── .gitignore
-     ├── README.md
-     ├── requirements.txt
-     └── structure_test.py
-```
+# Тестирование проектов YaNote и YaNews (RU)
 
-## После копирования тестов, написанных в ходе прохождения спринта, для проверки готовности проекта к сдаче необходимо выполнить 4 действия:
-1. Создать и активировать виртуальное окружение; установить зависимости из файла `requirements.txt`;
-2. Запустить скрипт для `run_tests.sh` из корневой директории проекта:
-```sh
+Описание проекта
+---
+В проект были написаны тесты для приложений YaNote (сервис для создания заметок) и YaNews (сервис для просмотра новостей). В нем реализованы ключевые тесты для маршрутов, доступа к страницам, создания и редактирования записей и комментариев, а также работы с пользователями и авторизацией. Для ya_news - pytest; ya_note - unittest.
+
+Основные задачи
+---
+✔️ Написание тестов для маршрутов и доступности страниц  
+✔️ Реализация тестов для создания и редактирования заметок и комментариев  
+✔️ Проверка логики работы с пользователями и правами доступа
+
+Стек технологий
+---
+- Python 3.9
+- Django 3.2
+- unittest
+- pytest
+
+Установка проекта из репозитория (Windows)
+---
+1. Клонировать репозиторий:
+```bash
+git clone git@github.com:JarexTI/django_testing.git
+```
+2. Создать и активировать виртуальное окружение:
+```bash
+python -m venv venv
+
+source venv/Scripts/activate
+```
+3. Установить зависимости из файла `requirements.txt`:
+```bash
+python -m pip install --upgrade pip
+
+pip install -r requirements.txt
+```
+4. Выполнить миграции
+```
+python ya_news/manage.py migrate
+
+python ya_note/manage.py migrate
+```
+5. Запустить проект:
+```bash
 bash run_tests.sh
 ```
+<br>
 
-**Если все проверки успешно выполнились, проект можно отправлять на ревью.**
+# Testing of YaNote and YaNews Projects (EN)
+
+Project Description
+---
+This project contains tests for the YaNote (note-taking service) and YaNews (news viewing service) applications. Key tests have been implemented for routes, page access, creation and editing of posts and comments, as well as user management and authorization. For ya_news - pytest; ya_note - unittest.
+
+Main Tasks
+---
+✔️ Writing tests for routes and page accessibility  
+✔️ Implementing tests for creating and editing notes and comments  
+✔️ Checking the logic of user handling and access rights
+
+Tech Stack
+---
+- Python 3.9
+- Django 3.2
+- unittest
+- pytest
+
+Project Setup from Repository (Windows)
+---
+1. Clone the repository:
+
+```bash
+git clone git@github.com:JarexTI/django_testing.git
+```
+
+2. Create and activate a virtual environment:
+
+```bash
+python -m venv venv
+
+source venv/Scripts/activate
+```
+
+3. Install dependencies from the `requirements.txt` file:
+
+```bash
+python -m pip install --upgrade pip
+
+pip install -r requirements.txt
+```
+
+4. Run migrations:
+
+```
+python ya_news/manage.py migrate
+
+python ya_note/manage.py migrate
+```
+
+5. Run the tests:
+
+```bash
+bash run_tests.sh
+```
